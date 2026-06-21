@@ -1,8 +1,5 @@
-# Dataset (too large for git)
-AVE_Dataset/
-
-# Pre-extracted features (~1.2 GB)
-features/
+# All data — videos, features, h5 files (too large for git)
+data/
 
 # Logs
 pipeline.log
@@ -13,7 +10,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
 *.egg-info/
 dist/
 build/
@@ -23,5 +19,13 @@ build/
 .idea/
 .claude/
 
-# Jupyter (removed but just in case)
+# Jupyter
 .ipynb_checkpoints/
+
+# Large model weights (exceed GitHub 100 MB limit)
+*.ckpt
+*.npz
+
+# macOS artifacts
+__MACOSX/
+.DS_Store

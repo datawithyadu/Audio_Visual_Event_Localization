@@ -247,6 +247,88 @@ class AVEDataset(Dataset):
             )
 
 
+class AVEDatasetH5(Dataset):
+    """
+    Dataset that reads directly from the official pre-extracted HDF5 feature files
+    released by Tian et al. (ECCV 2018).
+
+    audio_feature.h5  → key 'avadataset'  shape (4143, 10, 128)   float64
+    visual_feature.h5 → key 'avadataset'  shape (4143, 10, 7, 7, 512) float64
+
+    Row ordering in both h5 files matches Annotations.txt (verified).
+    For each split file we find each row's position in Annotations.txt to get
+    the correct h5 index.
+    """
+
+    def __init__(self, split="train"):
+        super().__init__()
+        import h5py
+
+        split_files = {
+            "train": config.TRAIN_SET_FILE,
+            "val":   config.VAL_SET_FILE,
+            "test":  config.TEST_SET_FILE,
+        }
+        if split not in split_files:
+            raise ValueError(f"Invalid split '{split}'")
+
+        # Build row → h5_index map from Annotations.txt
+        with open(config.ANNOTATIONS_FILE, "r", encoding="utf-8") as f:
+            ann_rows = [l.strip() for l in f.readlines()[1:] if l.strip()]
+        row_to_idx = {row: i for i, row in enumerate(ann_rows)}
+
+        # Parse split file and resolve h5 indices
+        with open(split_files[split], "r", encoding="utf-8") as f:
+            split_rows = [l.strip() for l in f if l.strip()]
+        self.samples = []
+        for row in split_rows:
+            h5_idx = row_to_idx[row]
+            parts = row.split("&")
+            category, video_id, start_time, end_time = parts[0], parts[1], int(parts[3]), int(parts[4])
+            self.samples.append({
+                "h5_idx":    h5_idx,
+                "category":  category,
+                "video_id":  video_id,
+                "start_time": start_time,
+                "end_time":   end_time,
+            })
+
+        # Open h5 files once — kept open for the dataset lifetime (num_workers=0 safe)
+        self._audio_file  = h5py.File(config.AUDIO_H5_FILE,  "r")
+        self._visual_file = h5py.File(config.VISUAL_H5_FILE, "r")
+        self._audio_h5    = self._audio_file["avadataset"]
+        self._visual_h5   = self._visual_file["avadataset"]
+
+    def __del__(self):
+        try:
+            self._audio_file.close()
+            self._visual_file.close()
+        except Exception:
+            pass
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        s = self.samples[idx]
+        i = s["h5_idx"]
+
+        audio = torch.from_numpy(self._audio_h5[i]).float()   # (10, 128)
+        video = torch.from_numpy(self._visual_h5[i]).float()  # (10, 7, 7, 512)
+        video = video.view(config.NUM_SEGMENTS, config.VIDEO_NUM_REGIONS, config.VIDEO_FEATURE_DIM)  # (10, 49, 512)
+
+        labels = utils.create_multiclass_labels(s["category"], s["start_time"], s["end_time"])
+        labels = torch.from_numpy(labels).long()
+
+        return {
+            "audio":        audio,
+            "video":        video,
+            "labels":       labels,
+            "category_idx": config.CATEGORY_TO_IDX.get(s["category"], 0),
+            "video_id":     s["video_id"],
+        }
+
+
 def get_dataloader(split, batch_size=None, use_preextracted=False, num_workers=0):
     """
     Create a DataLoader for the specified split.

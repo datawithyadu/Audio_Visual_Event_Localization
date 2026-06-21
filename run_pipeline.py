@@ -26,8 +26,14 @@ from torch.utils.data import DataLoader
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config, utils
 from models import AVEModel, R2Plus1DEncoder
-from dataset import AVEDataset
+from dataset import AVEDataset, AVEDatasetH5
 import evaluate as ev
+
+# Use official h5 features if available, otherwise fall back to pre-extracted .pt files
+H5_AVAILABLE = (
+    os.path.exists(config.AUDIO_H5_FILE) and
+    os.path.exists(config.VISUAL_H5_FILE)
+)
 # ── device ────────────────────────────────────────────────────────────────────
 if torch.cuda.is_available():
     DEVICE = torch.device("cuda")
@@ -46,6 +52,13 @@ log.info("=" * 60)
 # STAGE 1 — FEATURE EXTRACTION
 # ══════════════════════════════════════════════════════════════════════════════
 def stage1_extract():
+    if H5_AVAILABLE:
+        log.info("")
+        log.info("─" * 60)
+        log.info("STAGE 1 — SKIPPED (official h5 features found)")
+        log.info("─" * 60)
+        return
+
     import librosa, cv2
 
     audio_dir = os.path.join(config.FEATURES_DIR, "audio")
@@ -174,8 +187,15 @@ def stage2_train():
     log.info("STAGE 2 — TRAINING")
     log.info("─" * 60)
 
-    train_ds = AVEDataset("train", use_preextracted=True)
-    val_ds   = AVEDataset("val",   use_preextracted=True)
+    if H5_AVAILABLE:
+        log.info("Using official HDF5 features (audio_feature.h5 / visual_feature.h5)")
+        train_ds = AVEDatasetH5("train")
+        val_ds   = AVEDatasetH5("val")
+    else:
+        log.info("Using pre-extracted .pt features from features/")
+        train_ds = AVEDataset("train", use_preextracted=True)
+        val_ds   = AVEDataset("val",   use_preextracted=True)
+
     tr_ldr   = DataLoader(train_ds, batch_size=config.BATCH_SIZE, shuffle=True,
                           num_workers=0, pin_memory=True, drop_last=True)
     va_ldr   = DataLoader(val_ds,   batch_size=config.BATCH_SIZE, shuffle=False,
@@ -262,7 +282,7 @@ def stage3_evaluate(ckpt):
     log.info("STAGE 3 — EVALUATION  (test set)")
     log.info("─" * 60)
 
-    test_ds  = AVEDataset("test", use_preextracted=True)
+    test_ds  = AVEDatasetH5("test") if H5_AVAILABLE else AVEDataset("test", use_preextracted=True)
     te_ldr   = DataLoader(test_ds, batch_size=16, shuffle=False, num_workers=0)
     log.info(f"Test set : {len(test_ds)} clips")
 
@@ -324,4 +344,4 @@ if __name__ == "__main__":
     log.info(f"  Log     -> pipeline.log")
     log.info(f"  Results -> results.txt")
     log.info(f"  Model   -> {ckpt}")
-    log.info(f"  MLflow  -> run: mlflow ui")
+    log.info(f"  Log     -> pipeline.log  (full epoch history)")

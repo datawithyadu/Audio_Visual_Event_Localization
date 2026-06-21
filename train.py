@@ -3,9 +3,6 @@ Training script for the AVE att_Net model.
 
 Usage:
     python train.py
-
-Logs every run to MLflow (local, no server needed):
-    mlflow ui          → opens http://localhost:5000
 """
 
 import os
@@ -13,6 +10,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
+import mlflow
 
 import config
 import utils
@@ -127,8 +125,6 @@ def train(
     patience: int = config.EARLY_STOPPING_PATIENCE,
     run_name: str = "ave_att_net",
 ) -> AVEModel:
-    import mlflow
-
     device = get_device()
     print(f"Device : {device}")
 

@@ -10,15 +10,21 @@ import torch
 # Paths
 # ──────────────────────────────────────────────
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-DATASET_ROOT = os.path.join(PROJECT_ROOT, "AVE_Dataset")
-VIDEO_DIR = os.path.join(DATASET_ROOT, "AVE")
-ANNOTATIONS_FILE = os.path.join(DATASET_ROOT, "Annotations.txt")
-TRAIN_SET_FILE = os.path.join(DATASET_ROOT, "trainSet.txt")
-VAL_SET_FILE = os.path.join(DATASET_ROOT, "valSet.txt")
-TEST_SET_FILE = os.path.join(DATASET_ROOT, "testSet.txt")
+DATA_DIR     = os.path.join(PROJECT_ROOT, "data")
 
-# Directory for pre-extracted features (saves re-encoding every epoch)
-FEATURES_DIR = os.path.join(PROJECT_ROOT, "features")
+# Annotation and split files
+VIDEO_DIR        = os.path.join(DATA_DIR, "AVE")
+ANNOTATIONS_FILE = os.path.join(DATA_DIR, "Annotations.txt")
+TRAIN_SET_FILE   = os.path.join(DATA_DIR, "trainSet.txt")
+VAL_SET_FILE     = os.path.join(DATA_DIR, "valSet.txt")
+TEST_SET_FILE    = os.path.join(DATA_DIR, "testSet.txt")
+
+# Pre-extracted HDF5 features (released by Tian et al. 2018) — primary data source
+AUDIO_H5_FILE  = os.path.join(DATA_DIR, "audio_feature.h5")
+VISUAL_H5_FILE = os.path.join(DATA_DIR, "visual_feature.h5")
+
+# Custom-extracted .pt features (fallback when h5 not present)
+FEATURES_DIR   = os.path.join(DATA_DIR, "features")
 CHECKPOINT_DIR = os.path.join(PROJECT_ROOT, "checkpoints")
 
 # ──────────────────────────────────────────────

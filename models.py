@@ -83,7 +83,7 @@ class AVEModel(nn.Module):
         )
         audio_lstm_out = lstm_hidden * 2   # 256
 
-        # Bidirectional LSTM over attended video: 512 → 512
+        # Bidirectional LSTM over attended video: input 512 → output 512 (hidden 256 × 2 directions)
         self.video_lstm = nn.LSTM(
             input_size=video_dim,
             hidden_size=lstm_hidden * 2,
