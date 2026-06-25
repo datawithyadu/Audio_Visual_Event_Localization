@@ -2,8 +2,7 @@
 data/
 
 # Logs
-pipeline.log
-pipeline_err.log
+*.log
 
 # Python
 __pycache__/
@@ -29,3 +28,7 @@ build/
 # macOS artifacts
 __MACOSX/
 .DS_Store
+
+# Teammate sample files (not for repo)
+share_with_team/
+share_with_team.zip

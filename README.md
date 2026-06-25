@@ -29,7 +29,7 @@ Both gaps exceed the combined noise of the two 3-seed runs, so this conclusion i
 combined standard deviation (0.39% + 1.22% = 1.61 pp), so no statistically clear winner between
 the two backbones from 3 seeds each — more runs would be needed to distinguish them confidently.*
 
-Full per-class breakdown: [`results_vgg19_real_audio.txt`](results_vgg19_real_audio.txt) · [`results_r2plus1d_real_audio.txt`](results_r2plus1d_real_audio.txt)
+Full per-class breakdown: [`results_vgg19_real_audio.txt`](results_vgg19_real_audio.txt) · [`results_r2plus1d_real_audio.txt`](results/results_r2plus1d_real_audio.txt)
 
 ---
 
@@ -135,14 +135,19 @@ Audio_visual_event_localization/
 ├── run_real_audio.py            # 3-seed retraining after audio bug fix
 ├── run_audio_extraction.py      # Standalone audio-only re-extraction
 │
-├── results_vgg19_real_audio.txt            ← best: VGG19 + real audio (3-seed agg)
-├── results_r2plus1d_real_audio.txt         ← R(2+1)D + real audio (3-seed agg)
-├── results_real_audio_comparison.md        ← before/after audio-fix table
-├── results_seed_comparison.md             ← h5 vs R(2+1)D zero-audio comparison
-├── results_vgg19_seed{42,123,2024}.txt    ← h5 per-run detail
-├── results_r2plus1d_real_audio_seed{42,123,2024}.txt
+├── results_vgg19_real_audio.txt            ← VGG19 + real audio (3-seed agg)
 ├── results_vgg19_real_audio_seed{42,123,2024}.txt
-└── audio_extraction_failures.txt          ← "no failures" (4097/4097 succeeded)
+├── results_vgg19_seed{42,123,2024}.txt    ← h5 per-run detail
+├── results.txt                            ← VGG19 .pt single-run (zero-audio era)
+└── results/                               ← R(2+1)D results + comparison reports
+    ├── results_r2plus1d_real_audio.txt    ← R(2+1)D + real audio (3-seed agg)
+    ├── results_r2plus1d_real_audio_seed{42,123,2024}.txt
+    ├── results_r2plus1d_seed{42,123,2024}.txt
+    ├── results_self_extracted_features.txt
+    ├── results_seed_comparison.md         ← h5 vs R(2+1)D zero-audio comparison
+    ├── results_real_audio_comparison.md   ← before/after audio-fix table
+    ├── feature_comparison_report.md       ← feature diff vs Pallavi's samples
+    └── audio_extraction_failures.txt      ← "no failures" (4097/4097 succeeded)
 ```
 
 ---
@@ -186,7 +191,7 @@ python run_real_audio.py
 
 ### Multi-seed comparison
 ```bash
-python run_multiseed.py   # 3 seeds × h5 vs .pt, saves results_seed_comparison.md
+python run_multiseed.py   # 3 seeds × h5 vs .pt, saves results_seed_comparison.md (project root)
 ```
 
 | Stage | Description | Time (RTX 4050) |
