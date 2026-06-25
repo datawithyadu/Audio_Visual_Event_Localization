@@ -59,7 +59,8 @@ def stage1_extract():
         log.info("─" * 60)
         return
 
-    import librosa, cv2
+    import cv2
+    from feature_extractor import _load_audio_ffmpeg
 
     audio_dir = os.path.join(config.FEATURES_DIR, "audio")
     video_dir = os.path.join(config.FEATURES_DIR, "video")
@@ -110,7 +111,7 @@ def stage1_extract():
 
     def audio_feat(mp4):
         try:
-            y, _ = librosa.load(mp4, sr=config.AUDIO_SAMPLE_RATE, mono=True, duration=10.0)
+            y = _load_audio_ffmpeg(mp4, config.AUDIO_SAMPLE_RATE, 10.0)
             n = config.AUDIO_SAMPLE_RATE * config.NUM_SEGMENTS
             y = np.pad(y, (0, max(0, n - len(y))))[:n].astype(np.float32)
             with torch.no_grad():
