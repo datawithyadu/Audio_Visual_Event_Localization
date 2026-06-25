@@ -13,7 +13,7 @@ All numbers are **mean ± std across 3 seeds** (42, 123, 2024) unless noted.
 
 | Feature source | Audio | Accuracy | Macro Recall | Mean IoU | IoU ≥ 0.5 |
 |----------------|-------|----------|--------------|----------|------------|
-| **VGG19 self-extracted** | **real VGGish** | **70.00% ± 0.39%** | **82.72% ± 1.49%** | 80.17% ± 1.17% | 82.01% ± 1.69% |
+| VGG19 self-extracted | real VGGish | 70.00% ± 0.39% | 82.72% ± 1.49% | 80.17% ± 1.17% | 82.01% ± 1.69% |
 | R(2+1)D self-extracted | real VGGish | 68.83% ± 1.22% | 80.77% ± 2.00% | 80.41% ± 0.64% | 81.76% ± 0.76% |
 | Official h5 (Tian et al.) | VGGish h5 | 66.98% ± 1.14% | 78.19% ± 1.08% | 80.09% ± 0.46% | 82.34% ± 0.25% |
 | VGG19 self-extracted | zero (bug) ¹ | 61.27% (n=1) | 73.97% (n=1) | 80.40% | 82.09% |
@@ -21,7 +21,14 @@ All numbers are **mean ± std across 3 seeds** (42, 123, 2024) unless noted.
 
 ¹ *Audio was all-zero tensors due to a librosa/ffmpeg PATH bug on Windows — fixed 2026-06-25.*
 
-**Best result: VGG19 self-extracted + real audio (70.00% acc / 82.72% recall) exceeds the official h5 baseline by +3.0 pp accuracy and +4.5 pp recall.**  
+**Both self-extracted variants (VGG19 and R(2+1)D, with real audio) clearly outperform the official h5 baseline:**
+VGG19 leads h5 by +3.0 pp accuracy / +4.5 pp recall; R(2+1)D leads h5 by +1.9 pp / +2.6 pp.
+Both gaps exceed the combined noise of the two 3-seed runs, so this conclusion is well-supported.
+
+*VGG19 vs R(2+1)D (self-extracted): the ~1.2 pp accuracy gap between them is smaller than their
+combined standard deviation (0.39% + 1.22% = 1.61 pp), so no statistically clear winner between
+the two backbones from 3 seeds each — more runs would be needed to distinguish them confidently.*
+
 Full per-class breakdown: [`results_vgg19_real_audio.txt`](results_vgg19_real_audio.txt) · [`results_r2plus1d_real_audio.txt`](results_r2plus1d_real_audio.txt)
 
 ---
