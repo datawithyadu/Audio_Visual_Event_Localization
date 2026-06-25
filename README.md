@@ -29,7 +29,7 @@ Both gaps exceed the combined noise of the two 3-seed runs, so this conclusion i
 combined standard deviation (0.39% + 1.22% = 1.61 pp), so no statistically clear winner between
 the two backbones from 3 seeds each — more runs would be needed to distinguish them confidently.*
 
-Full per-class breakdown: [`results_vgg19_real_audio.txt`](results_vgg19_real_audio.txt) · [`results_r2plus1d_real_audio.txt`](results/results_r2plus1d_real_audio.txt)
+Full per-class breakdown: [`results_vgg19_selfext_3seeds.txt`](results_vgg19_selfext_3seeds.txt) · [`results_r2plus1d_selfext_3seeds.txt`](results/results_r2plus1d_selfext_3seeds.txt)
 
 ---
 
@@ -135,15 +135,15 @@ Audio_visual_event_localization/
 ├── run_real_audio.py            # 3-seed retraining after audio bug fix
 ├── run_audio_extraction.py      # Standalone audio-only re-extraction
 │
-├── results_vgg19_real_audio.txt            ← VGG19 + real audio (3-seed agg)
-├── results_vgg19_real_audio_seed{42,123,2024}.txt
-├── results_vgg19_seed{42,123,2024}.txt    ← h5 per-run detail
-├── results.txt                            ← VGG19 .pt single-run (zero-audio era)
+├── results_vgg19_selfext_3seeds.txt        ← VGG19 self-extracted, fixed audio (3-seed summary)
+├── results_vgg19_selfext_seed{42,123,2024}.txt
+├── results_vgg19_h5_seed{42,123,2024}.txt ← official h5 features, per-seed
+├── results_vgg19_selfext_zeroaudio_singlerun.txt  ← VGG19 self-extracted, broken audio (old)
 └── results/                               ← R(2+1)D results + comparison reports
-    ├── results_r2plus1d_real_audio.txt    ← R(2+1)D + real audio (3-seed agg)
-    ├── results_r2plus1d_real_audio_seed{42,123,2024}.txt
-    ├── results_r2plus1d_seed{42,123,2024}.txt
-    ├── results_self_extracted_features.txt
+    ├── results_r2plus1d_selfext_3seeds.txt          ← R(2+1)D self-extracted, fixed audio (3-seed)
+    ├── results_r2plus1d_selfext_seed{42,123,2024}.txt
+    ├── results_r2plus1d_zeroaudio_seed{42,123,2024}.txt  ← R(2+1)D with broken audio
+    ├── results_r2plus1d_selfext_zeroaudio_singlerun.txt  ← R(2+1)D self-extracted, broken audio (old)
     ├── results_seed_comparison.md         ← h5 vs R(2+1)D zero-audio comparison
     ├── results_real_audio_comparison.md   ← before/after audio-fix table
     ├── feature_comparison_report.md       ← feature diff vs Pallavi's samples
@@ -191,7 +191,7 @@ python run_real_audio.py
 
 ### Multi-seed comparison
 ```bash
-python run_multiseed.py   # 3 seeds × h5 vs .pt, saves results_seed_comparison.md (project root)
+python run_multiseed.py   # 3 seeds × h5 vs .pt, saves results/results_seed_comparison.md
 ```
 
 | Stage | Description | Time (RTX 4050) |
